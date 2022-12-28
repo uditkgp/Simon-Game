@@ -6,7 +6,9 @@ var gamePattern = [];
 
 var userClickedPattern = [];
 
-var started = "false"
+var started = "false";
+
+//Game started or not
 
 $(document).keydown(function () {
   if (started === "false")
@@ -16,69 +18,85 @@ $(document).keydown(function () {
   }
 });
 
+//Event listener of button click
+
 $(".btn").click(function () {
 
-  //2. Inside the handler, create a new variable called userChosenColour to store the id of the button that got clicked.
-  var userChosenColour = $(this).attr("id");
+  var userChosenColour = $(this).attr("id");                                   //variable to store user chosen colour
+  userClickedPattern.push(userChosenColour);                                   //stores user clicked pattern
 
-  //4. Add the contents of the variable userChosenColour created in step 2 to the end of this new userClickedPattern
-  userClickedPattern.push(userChosenColour);
   animatePress(userChosenColour);
   playSound(userChosenColour);
-  //console.log(userClickedPattern);
   checkAnswer((userClickedPattern.length-1));
-  
 });
 
+//
 function nextSequence() {
+
   userClickedPattern = [];
 
-  var randomNumber = Math.floor(Math.random() * 4);
-  var randomChosenColour = buttonColours[randomNumber];
-  gamePattern.push(randomChosenColour);
+  var randomNumber = Math.floor(Math.random() * 4);                              //random number generator [0,4)
 
-  //1. Use jQuery to select the button with the same id as the randomChosenColour
-  //2. Use Google/Stackoverflow to figure out how you can use jQuery to animate a flash to the button selected in step 1.
-  $("#" + randomChosenColour).fadeIn(100).fadeOut(100).fadeIn(100);
+  var randomChosenColour = buttonColours[randomNumber];                          //random colour chosen based on random number generated
+  gamePattern.push(randomChosenColour);                                          //stores game pattern
 
-  //3. Use Google/Stackoverflow to figure out how you can use Javascript to play the sound for the button colour selected in step 1.
-  playSound(randomChosenColour);
+  $("#" + randomChosenColour).fadeIn(100).fadeOut(100).fadeIn(100);              //shows random chosen colour
 
-  level++;
-  $("#level-title").text("Level " + level);
+  playSound(randomChosenColour);                                                 //plays sound of random chosen colour
 
+  level++;                                                                       //increase the level
+
+  $("#level-title").text("Level " + level);                                      //shows the current level
 }
+
+//play sound
 
 function playSound(name) {
   var audio = new Audio("sounds/" + name + ".mp3");
   audio.play();
 }
 
+//show the clicked button
+
 function animatePress(currentColour) {
-  $("#" + currentColour).addClass("pressed");
+
+  $("#" + currentColour).addClass("pressed");                                       //change button styles of clicked buttons
+
   setTimeout(function () {
-    $("#" + currentColour).removeClass("pressed");
+    $("#" + currentColour).removeClass("pressed");                                  //restore button styles
   }, 100);
 }
 
+//checks if sequence is right or wrong
+
 function checkAnswer(currentLevel) {
-  if (userClickedPattern[currentLevel] === gamePattern[currentLevel]) {
-    if ((currentLevel+1) === level) {
+
+  if (userClickedPattern[currentLevel] === gamePattern[currentLevel]) {               //checks with each clicks
+
+    if ((currentLevel+1) === level) {                                                 //checks if we got all correct
+
       setTimeout(function () {
-        nextSequence();
+        nextSequence();                                                               //allot next colour in game pattern
       }, 1000);
     }
   }
   else{
-    playSound("wrong");
-    $("body").addClass("game-over");
+
+    playSound("wrong");                                                               //play sound of wrong if it is wrong
+
+    $("body").addClass("game-over");                                                  //change body styles when it is wrong for set time
+
     setTimeout(function(){
-      $("body").removeClass("game-over");
+      $("body").removeClass("game-over");                                             //restore body styles
     }, 200);
-    $("#level-title").text("Game Over, Press Any Key to Restart");
+
+    $("#level-title").text("Game Over, Press Any Key to Restart");                    //change heading when it is wrong
+
     startOver();
   }
 }
+
+//Reset the values to starting point
 
 function startOver(){
   level=0;
